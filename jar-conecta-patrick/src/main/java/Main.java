@@ -1,4 +1,5 @@
 import com.github.britooo.looca.api.core.Looca;
+import org.json.JSONObject;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
@@ -9,13 +10,19 @@ import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         Scanner leitor = new Scanner(System.in);
         Conexao conexao = new Conexao();
         JdbcTemplate interfaceConexao = conexao.getConexaoDoBanco();
 
+        WMICCommand tempW = new WMICCommand();
+        Double temperaturaZona = tempW.temp();
+        System.out.println(temperaturaZona);
+
         Looca looca = new Looca();
         SystemInfo oshi = new SystemInfo();
+        String sistema = looca.getSistema().getSistemaOperacional();
+
 
         FormatString leitura = new FormatString();
 
@@ -84,6 +91,12 @@ public class Main {
                                     "VALUES (%s, %s, %s, 4, %s)".formatted
                                             (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
 
+                            Slack slack = new Slack();
+
+                            JSONObject message = new JSONObject();
+                            message.put("text", "Ola :computer");
+
+                            slack.sendMessage(message);
                             System.out.println("""
                                     \n\n\n\n\n\n
                                     Leituras realizadas com sucesso!
@@ -112,10 +125,11 @@ public class Main {
                                     discoAtual.discoDisponivel, taxa_escrita_disco, taxa_leitura_disco,
                                     memoria.memoriaDisponivel, memoria.memoriaVirtual, memoria.tempoLigado,
                                     taxa_dowload_rede, taxa_upload_rede,
-                                    cpu.cpuUso, cpu.cpuCarga, cpu.cpuTemperatura, cpu.getCpuTemperaturaFahrenheit, cpu.getCpuTemperaturaKelvin
-                            ));
+                                    cpu.cpuUso, cpu.cpuCarga, temperaturaZona, cpu.getCpuTemperaturaFahrenheit, cpu.getCpuTemperaturaKelvin));
                         }
                 }
+
         }
     }
 }
+
