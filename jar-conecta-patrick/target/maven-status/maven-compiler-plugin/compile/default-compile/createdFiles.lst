@@ -1,0 +1,13 @@
+Conexao.class
+LeituraCpu$TemperatureHandler.class
+LeituraDisco.class
+FormatString.class
+LeituraCpu.class
+LeituraRede.class
+Usuario.class
+com\github\britooo\looca\api\group\temperatura\Temperatura.class
+Main.class
+LeituraMemoria.class
+WMICCommand.class
+Slack.class
+Maquina.class

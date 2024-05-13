@@ -245,8 +245,6 @@ public class Main {
             System.out.println("0. Sair");
             componente = leitor.nextInt();
 
-            // Crie um ArrayList para armazenar os dados selecionados pelo usuário
-
             switch (componente) {
                 case 1:
                     System.out.println("Dados que serão capturados da CPU:");
@@ -309,7 +307,6 @@ public class Main {
                     System.out.println("Opção inválida.");
                     break;
             }
-
         } while (componente != 0);
     }
 }
