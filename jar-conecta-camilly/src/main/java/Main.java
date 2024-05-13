@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,8 +12,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws InterruptedException {
         Scanner leitor = new Scanner(System.in);
+        Scanner leitorOp = new Scanner(System.in);
+        Scanner leitorConf = new Scanner(System.in);
         Conexao conexao = new Conexao();
         JdbcTemplate interfaceConexao = conexao.getConexaoDoBanco();
+        ArrayList<String> dadosSelecionados = new ArrayList<>();
 
         Looca looca = new Looca();
         SystemInfo oshi = new SystemInfo();
@@ -29,22 +33,18 @@ public class Main {
         do {
             System.out.println("Menu:");
             System.out.println("1. Sobre a Conecta");
-            System.out.println("2. Nossa Missão");
-            System.out.println("3. Componentes");
+            System.out.println("2. Componentes");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
-            opcao = leitor.nextInt();
+            opcao = leitorOp.nextInt();
 
             switch (opcao) {
                 case 1:
                     System.out.println("\nSobre a Conecta:");
                     System.out.println("Somos especializados em monitoramento de serviços hospitalares.\n");
-                    break;
-                case 2:
-                    System.out.println("\nNossa Missão:");
                     System.out.println("Nossa missão é fornecer soluções inovadoras para a gestão eficiente de hospitais.\n");
                     break;
-                case 3:
+                case 2:
                     monitorarComponente();
                     break;
                 case 0:
@@ -65,21 +65,43 @@ public class Main {
 
         List<Usuario> usuarioBanco = interfaceConexao.query("SELECT * FROM Usuario WHERE emailUsuario = '%s' AND senhaUsuario = '%s'".formatted(email_usuario, senha_usuario), new BeanPropertyRowMapper<>(Usuario.class));
 
+
+
         switch (usuarioBanco.size()) {
             case 0:
                 System.out.println("Login ou senha incorretos ou inexistentes !!!");
                 break;
 
             default:
-                System.out.println("Login realizado com sucesso, aguarde as leituras... \n\n\n\n\n\n");
+                System.out.println("Login realizado com sucesso, aguarde as leituras... \n\n");
+
+                int opcaoConf = 0;
+
+                System.out.println("Configuração:");
+                System.out.println("1. Padrão");
+                System.out.println("2. Personalizar");
+                System.out.print("Escolha uma opção: ");
+                opcao = leitorConf.nextInt();
+
+                switch (opcao) {
+                    case 1:
+                        opcaoConf = 1;
+                        break;
+                    case 2:
+                        opcaoConf = 2;
+                        escolherComponente(dadosSelecionados);
+                        break;
+                    default:
+                        System.out.println("\nOpção inválida. Por favor, escolha uma opção válida.");
+                        break;
+                }
+
                 String hostname = looca.getRede().getParametros().getHostName();
                 List<Maquina> maquinaBanco = interfaceConexao.query("SELECT * FROM Maquina WHERE hostnameMaquina = '%s'".formatted(hostname), new BeanPropertyRowMapper<>(Maquina.class));
-
                 switch (maquinaBanco.size()) {
                     case 0:
                         System.out.println("Cadastre a máquina antes de prosseguir");
                         break;
-
                     default:
                         while (true) {
                             LeituraDisco discoAnterior = new LeituraDisco();
@@ -116,7 +138,8 @@ public class Main {
                                     "VALUES (%s, %s, %s, 4, %s)".formatted
                                             (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
 
-                            System.out.println("""
+                            if(opcaoConf == 1){
+                                System.out.println("""
                                      \n
                                     
                                     Leituras realizadas com sucesso!
@@ -149,11 +172,17 @@ public class Main {
                                     --------------------------------------------
                                                                         
                                     """.formatted(
-                                    discoAtual.discoDisponivel, taxa_escrita_disco, taxa_leitura_disco,
-                                    memoria.memoriaDisponivel, memoria.memoriaVirtual, memoria.tempoLigado,
-                                    taxa_dowload_rede, taxa_upload_rede,
-                                    cpu.cpuUso, cpu.cpuCarga, cpu.cpuTemperatura
-                            ));
+                                        discoAtual.discoDisponivel, taxa_escrita_disco, taxa_leitura_disco,
+                                        memoria.memoriaDisponivel, memoria.memoriaVirtual, memoria.tempoLigado,
+                                        taxa_dowload_rede, taxa_upload_rede,
+                                        cpu.cpuUso, cpu.cpuCarga, cpu.cpuTemperatura
+                                ));
+                            }else{
+                                System.out.println("Dados selecionados:");
+                                for (String dado : dadosSelecionados) {
+                                    System.out.println("- " + dado);
+                                }
+                            }
                         }
                 }
         }
@@ -202,5 +231,85 @@ public class Main {
                     break;
             }
         }while (componente != 0);
+    }
+
+    public static void escolherComponente( ArrayList<String> dadosSelecionados) {
+        Scanner leitor = new Scanner(System.in);
+        Integer componente;
+
+        do {
+            System.out.println("\nComponentes:");
+            System.out.println("Escolha o componente:");
+            System.out.println("1. CPU");
+            System.out.println("2. Memória");
+            System.out.println("0. Sair");
+            componente = leitor.nextInt();
+
+            // Crie um ArrayList para armazenar os dados selecionados pelo usuário
+
+            switch (componente) {
+                case 1:
+                    System.out.println("Dados que serão capturados da CPU:");
+                    System.out.println("1. Uso da CPU (%)");
+                    System.out.println("2. Carga (%)");
+                    System.out.println("3. Temperatura (°C)");
+                    System.out.println("0. Concluir seleção");
+                    int opcaoCPU;
+                    do {
+                        opcaoCPU = leitor.nextInt();
+                        switch (opcaoCPU) {
+                            case 1:
+                                dadosSelecionados.add("Uso da CPU (%)");
+                                break;
+                            case 2:
+                                dadosSelecionados.add("Carga (%)");
+                                break;
+                            case 3:
+                                dadosSelecionados.add("Temperatura (°C)");
+                                break;
+                            case 0:
+                                break;
+                            default:
+                                System.out.println("Opção inválida.");
+                                break;
+                        }
+                    } while (opcaoCPU != 0);
+                    break;
+                case 2:
+                    System.out.println("Dados que serão capturados da Memória:");
+                    System.out.println("1. Memória Disponível (%)");
+                    System.out.println("2. Memória virtual (Gb)");
+                    System.out.println("3. Tempo ligado (Horas)");
+                    System.out.println("0. Concluir seleção");
+                    int opcaoMemoria;
+                    do {
+                        opcaoMemoria = leitor.nextInt();
+                        switch (opcaoMemoria) {
+                            case 1:
+                                dadosSelecionados.add("Memória Disponível (%)");
+                                break;
+                            case 2:
+                                dadosSelecionados.add("Memória virtual (Gb)");
+                                break;
+                            case 3:
+                                dadosSelecionados.add("Tempo ligado (Horas)");
+                                break;
+                            case 0:
+                                break;
+                            default:
+                                System.out.println("Opção inválida.");
+                                break;
+                        }
+                    } while (opcaoMemoria != 0);
+                    break;
+                case 0:
+                    System.out.println("Saindo...");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+                    break;
+            }
+
+        } while (componente != 0);
     }
 }
