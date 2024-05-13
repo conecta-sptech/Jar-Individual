@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
-import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,17 +14,13 @@ public class Main {
         Scanner leitor = new Scanner(System.in);
         Conexao conexao = new Conexao();
         JdbcTemplate interfaceConexao = conexao.getConexaoDoBanco();
-
         WMICCommand tempW = new WMICCommand();
         Double temperaturaZona = tempW.temp();
-        System.out.println(temperaturaZona);
-
+        Slack slack = new Slack();
         Looca looca = new Looca();
         SystemInfo oshi = new SystemInfo();
-        String sistema = looca.getSistema().getSistemaOperacional();
-
-
         FormatString leitura = new FormatString();
+        JSONObject message = new JSONObject();
 
 //        verifica usuario
         System.out.println("Digite seu login");
@@ -91,10 +87,11 @@ public class Main {
                                     "VALUES (%s, %s, %s, 4, %s)".formatted
                                             (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
 
-                            Slack slack = new Slack();
-
-                            JSONObject message = new JSONObject();
-                            message.put("text", "Ola :computer");
+                            if (cpu.cpuUso > 100.0) {
+                                message.put("text", "Alerta: Processador " + cpu.cpuUso+ "%");
+                            } else if (memoria.memoriaDisponivel < 1.0) {
+                                message.put("text", "Alerta:Memoria RAM "+ memoria.memoriaDisponivel);
+                            }
 
                             slack.sendMessage(message);
                             System.out.println("""

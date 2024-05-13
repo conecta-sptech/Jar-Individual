@@ -1,14 +1,13 @@
 import com.github.britooo.looca.api.core.Looca;
 import oshi.SystemInfo;
 import oshi.hardware.HardwareAbstractionLayer;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-
 public class WMICCommand {
     private final HardwareAbstractionLayer hardware;
+
     public WMICCommand() {
         hardware = new SystemInfo().getHardware();
     }
@@ -51,22 +50,21 @@ public class WMICCommand {
             }
 
             return temperature;
-        }
-        else {
+        } else {
             return this.hardware.getSensors().getCpuTemperature();
         }
     }
-        private double extractTemperature (String line){
-            // Remover espaços em branco extras e caracteres não numéricos
-            line = line.trim().replaceAll("[^\\d.]", "");
-            // Verificar se a string não está vazia
-            if (!line.isEmpty()) {
-                // Converter para double apenas se a string não estiver vazia
-                return Double.parseDouble(line);
-            } else {
-                // Retornar um valor padrão se a linha estiver vazia
-                return Double.MIN_VALUE;
-            }
-        }
-}
 
+    private double extractTemperature(String line) {
+        // Remover espaços em branco extras e caracteres não numéricos
+        line = line.trim().replaceAll("[^\\d.]", "");
+        // Verificar se a string não está vazia
+        if (!line.isEmpty()) {
+            // Converter para double apenas se a string não estiver vazia
+            return Double.parseDouble(line);
+        } else {
+            // Retornar um valor padrão se a linha estiver vazia
+            return Double.MIN_VALUE;
+        }
+    }
+}
