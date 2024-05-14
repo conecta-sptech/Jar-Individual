@@ -233,7 +233,11 @@ public class Main {
         }while (componente != 0);
     }
 
+<<<<<<< HEAD
     public static void escolherComponente(ArrayList<String> dadosSelecionados) {
+=======
+    public static void escolherComponente( ArrayList<String> dadosSelecionados) {
+>>>>>>> f89705919e480a6535a0e2865b44052c1618d243
         Scanner leitor = new Scanner(System.in);
         Integer componente;
 
@@ -242,11 +246,16 @@ public class Main {
             System.out.println("Escolha o componente:");
             System.out.println("1. CPU");
             System.out.println("2. Memória");
+<<<<<<< HEAD
             System.out.println("0. Concluir");
+=======
+            System.out.println("0. Sair");
+>>>>>>> f89705919e480a6535a0e2865b44052c1618d243
             componente = leitor.nextInt();
 
             switch (componente) {
                 case 1:
+<<<<<<< HEAD
                     selecionarDadosCPU(dadosSelecionados);
                     break;
                 case 2:
@@ -254,6 +263,63 @@ public class Main {
                     break;
                 case 0:
                     System.out.println("Efetuando a leitura dos dados...");
+=======
+                    System.out.println("Dados que serão capturados da CPU:");
+                    System.out.println("1. Uso da CPU (%)");
+                    System.out.println("2. Carga (%)");
+                    System.out.println("3. Temperatura (°C)");
+                    System.out.println("0. Concluir seleção");
+                    int opcaoCPU;
+                    do {
+                        opcaoCPU = leitor.nextInt();
+                        switch (opcaoCPU) {
+                            case 1:
+                                dadosSelecionados.add("Uso da CPU (%)");
+                                break;
+                            case 2:
+                                dadosSelecionados.add("Carga (%)");
+                                break;
+                            case 3:
+                                dadosSelecionados.add("Temperatura (°C)");
+                                break;
+                            case 0:
+                                break;
+                            default:
+                                System.out.println("Opção inválida.");
+                                break;
+                        }
+                    } while (opcaoCPU != 0);
+                    break;
+                case 2:
+                    System.out.println("Dados que serão capturados da Memória:");
+                    System.out.println("1. Memória Disponível (%)");
+                    System.out.println("2. Memória virtual (Gb)");
+                    System.out.println("3. Tempo ligado (Horas)");
+                    System.out.println("0. Concluir seleção");
+                    int opcaoMemoria;
+                    do {
+                        opcaoMemoria = leitor.nextInt();
+                        switch (opcaoMemoria) {
+                            case 1:
+                                dadosSelecionados.add("Memória Disponível (%)");
+                                break;
+                            case 2:
+                                dadosSelecionados.add("Memória virtual (Gb)");
+                                break;
+                            case 3:
+                                dadosSelecionados.add("Tempo ligado (Horas)");
+                                break;
+                            case 0:
+                                break;
+                            default:
+                                System.out.println("Opção inválida.");
+                                break;
+                        }
+                    } while (opcaoMemoria != 0);
+                    break;
+                case 0:
+                    System.out.println("Saindo...");
+>>>>>>> f89705919e480a6535a0e2865b44052c1618d243
                     break;
                 default:
                     System.out.println("Opção inválida.");
@@ -261,6 +327,7 @@ public class Main {
             }
         } while (componente != 0);
     }
+<<<<<<< HEAD
 
     public static void selecionarDadosCPU(ArrayList<String> dadosSelecionados) {
         Scanner leitor = new Scanner(System.in);
@@ -355,4 +422,6 @@ public class Main {
             }
         } while (opcaoMemoria != 0);
     }
+=======
+>>>>>>> f89705919e480a6535a0e2865b44052c1618d243
 }

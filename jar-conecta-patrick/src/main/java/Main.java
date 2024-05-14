@@ -1,23 +1,26 @@
 import com.github.britooo.looca.api.core.Looca;
+import org.json.JSONObject;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
-import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
 
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         Scanner leitor = new Scanner(System.in);
         Conexao conexao = new Conexao();
         JdbcTemplate interfaceConexao = conexao.getConexaoDoBanco();
-
+        WMICCommand tempW = new WMICCommand();
+        Double temperaturaZona = tempW.temp();
+        Slack slack = new Slack();
         Looca looca = new Looca();
         SystemInfo oshi = new SystemInfo();
-
         FormatString leitura = new FormatString();
+        JSONObject message = new JSONObject();
 
 //        verifica usuario
         System.out.println("Digite seu login");
@@ -84,6 +87,13 @@ public class Main {
                                     "VALUES (%s, %s, %s, 4, %s)".formatted
                                             (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
 
+                            if (cpu.cpuUso > 100.0) {
+                                message.put("text", "Alerta: Processador " + cpu.cpuUso+ "%");
+                            } else if (memoria.memoriaDisponivel < 1.0) {
+                                message.put("text", "Alerta:Memoria RAM "+ memoria.memoriaDisponivel);
+                            }
+
+                            slack.sendMessage(message);
                             System.out.println("""
                                     \n\n\n\n\n\n
                                     Leituras realizadas com sucesso!
@@ -112,10 +122,11 @@ public class Main {
                                     discoAtual.discoDisponivel, taxa_escrita_disco, taxa_leitura_disco,
                                     memoria.memoriaDisponivel, memoria.memoriaVirtual, memoria.tempoLigado,
                                     taxa_dowload_rede, taxa_upload_rede,
-                                    cpu.cpuUso, cpu.cpuCarga, cpu.cpuTemperatura, cpu.getCpuTemperaturaFahrenheit, cpu.getCpuTemperaturaKelvin
-                            ));
+                                    cpu.cpuUso, cpu.cpuCarga, temperaturaZona, cpu.getCpuTemperaturaFahrenheit, cpu.getCpuTemperaturaKelvin));
                         }
                 }
+
         }
     }
 }
+
