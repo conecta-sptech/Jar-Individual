@@ -9,7 +9,7 @@ public class Conexao {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/Conecta");
         dataSource.setUsername("UserConecta");
-        dataSource.setPassword("Coadnecta2024");
+        dataSource.setPassword("Conecta2024");
 
         conexaoDoBanco = new JdbcTemplate(dataSource);
     }

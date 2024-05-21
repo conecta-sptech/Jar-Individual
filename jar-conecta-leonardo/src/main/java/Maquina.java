@@ -12,6 +12,11 @@ public class Maquina {
     public Maquina() {
     }
 
+    public Maquina(Integer idMaquina, String hostnameMaquina) {
+        this.idMaquina = idMaquina;
+        this.hostnameMaquina = hostnameMaquina;
+    }
+
     public Maquina(Integer idMaquina, String hostnameMaquina, Integer ramMaquina, Integer discoMaquina, Double clockProcessadorMaquina, Integer nucleosProcessadorMaquina, String soMaquina, String ociosidadeMaquina, String fkEmpresaMaquina) {
         this.idMaquina = idMaquina;
         this.hostnameMaquina = hostnameMaquina;
