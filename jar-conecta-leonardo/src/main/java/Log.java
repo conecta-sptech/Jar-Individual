@@ -1,3 +1,7 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Log {
     private String date;
     private String logLevel;
@@ -23,6 +27,34 @@ public class Log {
         this.hostnameMaquina = hostnameMaquina;
         this.message = message;
         this.stackTrace = stackTrace;
+    }
+
+    public static void gerarArquivoTxt(String caminhoArquivo, String logText) throws IOException {
+        // Acessa o arquivo txt como leitor
+        BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo));
+
+        // Realiza a leitura do arquivo txt e salva cada linha em uma lista
+        List<String> listaLogs = new ArrayList<>();
+        String linha = "";
+        while ((linha = br.readLine()) != null) {
+            if (!linha.isEmpty()) {
+                listaLogs.add(linha);
+            }
+        }
+
+        // Acessa o arquivo txt como "escritor"
+        OutputStream os = new FileOutputStream(caminhoArquivo);
+        Writer wr = new OutputStreamWriter(os);
+        BufferedWriter bw = new BufferedWriter(wr);
+
+        // Atualiza o arquivo txt com o novo log gerado + os logs antigos
+        bw.write(logText);
+        for (String log : listaLogs) {
+            bw.newLine();
+            bw.newLine();
+            bw.write(log);
+        }
+        bw.close();
     }
 
     public String toStringMessage() {

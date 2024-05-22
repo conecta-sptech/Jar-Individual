@@ -2,21 +2,19 @@ import com.github.britooo.looca.api.core.Looca;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws IOException {
         Scanner in = new Scanner(System.in);
         Conexao conexao = new Conexao();
         JdbcTemplate interfaceConexao = conexao.getConexaoDoBanco();
-
         Looca looca = new Looca();
-
         FormatString leitura = new FormatString();
 
         String date = "";
@@ -26,6 +24,7 @@ public class Main {
         Integer idMaquina = 0;
         String hostnameMaquina = "";
         String stackTrace = "";
+        String caminhoArquivo = "C:\\log\\logs.txt";
 
         System.out.println("Digite seu e-mail:");
         String email = in.nextLine();
@@ -44,7 +43,7 @@ public class Main {
                     message = "E-mail ou senha incorreto(s).";
 
                     Log warnLogUsuario = new Log(date, logLevel, statusCode, message, stackTrace);
-                    System.out.println(warnLogUsuario.toStringMessage());
+                    Log.gerarArquivoTxt(caminhoArquivo, warnLogUsuario.toStringMessage());
                     break;
 
                 default:
@@ -71,7 +70,7 @@ public class Main {
                             message = "Máquina não encontrada no banco de dados.";
 
                             Log warnLogMaquina = new Log(date, logLevel, statusCode, idMaquina, hostname, message, stackTrace);
-                            System.out.println(warnLogMaquina.toString().replace("\"idMaquina\": 0, ", ""));
+                            Log.gerarArquivoTxt(caminhoArquivo, warnLogMaquina.toStringMessage());
                             break;
 
                         default:
@@ -159,7 +158,7 @@ public class Main {
             stackTrace = sw.toString().replace("\n", " ").replace("\r", "").replace("\t", "");
 
             Log errorLogServer = new Log(date, logLevel, statusCode, message, stackTrace);
-            System.out.println(errorLogServer.toStringMessage());
+            Log.gerarArquivoTxt(caminhoArquivo, errorLogServer.toStringMessage());
         }
     }
 }
