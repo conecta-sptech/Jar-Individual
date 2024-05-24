@@ -1,9 +1,9 @@
 import com.github.britooo.looca.api.core.Looca;
+import org.json.JSONObject;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,6 +22,9 @@ public class Main {
         Looca looca = new Looca();
         SystemInfo oshi = new SystemInfo();
         FormatString leitura = new FormatString();
+        Slack slack = new Slack();
+        JSONObject messagemSlack = new JSONObject();
+
 
         String date = "";
         String logLevel = "";
@@ -125,6 +128,15 @@ public class Main {
                                 interfaceConexao.update("INSERT INTO LeituraCpu (cpuUso, cpuCarga, cpuTemperatura, fkComponenteCpu, fkMaquinaCpu)" +
                                         "VALUES (%s, %s, %s, 4, %s)".formatted
                                                 (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
+
+                                // Alertas do Slack
+
+                                if (cpu.cpuUso > 5.0) {
+                                    messagemSlack.put("text", "Alerta: Processador " + cpu.cpuUso + "%");
+                                } else if (memoria.memoriaDisponivel < 1.0) {
+                                    messagemSlack.put("text", "Alerta: Memoria RAM " + memoria.memoriaDisponivel);
+                                }
+                                slack.sendMessage(messagemSlack);
 
                                 // Inovação do projeto coletar dados de disco e mémoria em %
 
