@@ -4,6 +4,9 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
@@ -18,9 +21,14 @@ public class Main {
         Double temperaturaZona = tempW.temp();
         Slack slack = new Slack();
         Looca looca = new Looca();
+        LeituraDisco leituraDiscoPc = new LeituraDisco();
         SystemInfo oshi = new SystemInfo();
         FormatString leitura = new FormatString();
         JSONObject message = new JSONObject();
+        Double processador = looca.getProcessador().getUso();
+        Double memoriaRAM = looca.getMemoria().getDisponivel() / Math.pow(1024.0, 3);
+        Double disco = leituraDiscoPc.discoDisponivel;
+        //String hostnamePc = looca.getRede().getParametros().getHostName();
 
 //        verifica usuario
         System.out.println("Digite seu login");
@@ -87,10 +95,62 @@ public class Main {
                                     "VALUES (%s, %s, %s, 4, %s)".formatted
                                             (leitura.formatString(cpu.cpuUso), leitura.formatString(cpu.cpuCarga), leitura.formatString(cpu.cpuTemperatura), fk_empresa));
 
-                            if (cpu.cpuUso > 100.0) {
-                                message.put("text", "Alerta: Processador " + cpu.cpuUso+ "%");
-                            } else if (memoria.memoriaDisponivel < 1.0) {
-                                message.put("text", "Alerta:Memoria RAM "+ memoria.memoriaDisponivel);
+                            LocalDateTime dataHora = LocalDateTime.now();
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                            String dataHoraFormatada = dataHora.format(formatter);
+
+                            if (processador > 80.0) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Processador " + processador + " %\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+
+                            } else if (memoriaRAM < 1.0) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Memoria Ram " + memoriaRAM + " mb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+                            } else if (disco < 100) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Disco " + disco + " gb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+                            } else if (processador > 80.0 && memoriaRAM < 1.0) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Processador " + processador + " % e Memoria Ram " + memoriaRAM + " mb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+                            } else if (processador > 80.0 && disco < 100) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Processador " + processador + " % e Disco " + disco + " gb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+                            } else if (memoriaRAM < 1.0 && disco < 100) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Memoria Ram " + memoriaRAM + " mb e Disco " + disco + " gb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
+                            } else if (processador > 80.0 && memoriaRAM < 1 && disco < 100) {
+                                message.put("text",
+                                        "    ALERTA\n" +
+                                                "\n" +
+                                                " Hostname: " + hostname + "\n" +
+                                                " Componente: Processador " + processador +
+                                                " % e Memoria Ram " + memoriaRAM +
+                                                " mb e Disco " + disco + " gb\n" +
+                                                " Data/Hora: " + dataHoraFormatada + " \n");
                             }
 
                             slack.sendMessage(message);
