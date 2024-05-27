@@ -17,14 +17,13 @@ public class Main {
         Looca looca = new Looca();
         FormatString leitura = new FormatString();
 
+        String caminhoArquivo = "C:\\Log\\logs.txt";
+
         String date = "";
         String logLevel = "";
         Integer statusCode = 0;
-        String message = "";
-        Integer idMaquina = 0;
-        String hostnameMaquina = "";
+        String detail = "";
         String stackTrace = "";
-        String caminhoArquivo = "C:\\log\\logs.txt";
 
         System.out.println("Digite seu e-mail:");
         String email = in.nextLine();
@@ -39,11 +38,11 @@ public class Main {
                 case 0:
                     date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
                     logLevel = "WARN";
-                    statusCode = 401;
-                    message = "E-mail ou senha incorreto(s).";
+                    statusCode = 403;
+                    detail = "'message': '%s', 'email': '%s', 'senha': '%s'".formatted("E-mail ou senha incorreto(s).", email, senha.replaceAll(".", "*"));
 
-                    Log warnLogUsuario = new Log(date, logLevel, statusCode, message, stackTrace);
-                    Log.gerarArquivoTxt(caminhoArquivo, warnLogUsuario.toStringMessage());
+                    Log warnLogUsuario = new Log(date, logLevel, statusCode, detail, stackTrace);
+                    Log.gerarLog(caminhoArquivo, warnLogUsuario.toString());
                     break;
 
                 default:
@@ -67,13 +66,16 @@ public class Main {
                             date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
                             logLevel = "WARN";
                             statusCode = 404;
-                            message = "Máquina não encontrada no banco de dados.";
+                            detail = "'message': '%s', 'hostname': '%s'".formatted("Máquina não encontrada no banco de dados.", hostname);
 
-                            Log warnLogMaquina = new Log(date, logLevel, statusCode, idMaquina, hostname, message, stackTrace);
-                            Log.gerarArquivoTxt(caminhoArquivo, warnLogMaquina.toStringMessage());
+                            Log warnLogMaquina = new Log(date, logLevel, statusCode, detail, stackTrace);
+                            Log.gerarLog(caminhoArquivo, warnLogMaquina.toString());
                             break;
 
                         default:
+                            Integer idMaquina = 0;
+                            String hostnameMaquina = "";
+
                             for (Maquina maquina : maquinaBanco) {
                                 idMaquina = maquina.getIdMaquina();
                                 hostnameMaquina = maquina.getHostnameMaquina();
@@ -149,7 +151,7 @@ public class Main {
             date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
             logLevel = "ERROR";
             statusCode = 503;
-            message = "Houve um problema de conexão com o banco de dados.";
+            detail = "'message': 'Houve um problema de conexão com o banco de dados.'";
 
             // Captura o stackTrace e o transforma em uma String
             StringWriter sw = new StringWriter();
@@ -157,8 +159,8 @@ public class Main {
             e.printStackTrace(pw);
             stackTrace = sw.toString().replace("\n", " ").replace("\r", "").replace("\t", "");
 
-            Log errorLogServer = new Log(date, logLevel, statusCode, message, stackTrace);
-            Log.gerarArquivoTxt(caminhoArquivo, errorLogServer.toStringMessage());
+            Log errorLogServer = new Log(date, logLevel, statusCode, detail, stackTrace);
+            Log.gerarLog(caminhoArquivo, errorLogServer.toString());
         }
     }
 }
