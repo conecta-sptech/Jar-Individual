@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Slack {
-    private String url = "https://hooks.slack.com/services/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";
+    private String url = "https://hooks.slack.com/services/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";
 
     public void sendMessage(JSONObject message) throws Exception {
 
