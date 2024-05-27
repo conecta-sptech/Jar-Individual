@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Slack {
-    private String url = "https://hooks.slack.com/services/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";
+    private String url = "";
 
     public void sendMessage(JSONObject message) throws Exception {
 
@@ -25,10 +25,6 @@ public class Slack {
         wr.close();
 
         int responseCode = con.getResponseCode();
-
-        /*System.out.println("Sending 'POST' request to URL: " + this.url);
-        System.out.println("POST parameters: " + message.toString());
-        System.out.println("Response Code: " + responseCode);*/
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
