@@ -4,10 +4,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import oshi.SystemInfo;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,7 +30,14 @@ public class Main {
         Double processador = looca.getProcessador().getUso();
         Double memoriaRAM = looca.getMemoria().getDisponivel() / Math.pow(1024.0, 3);
         Double disco = leituraDiscoPc.discoDisponivel;
-        //String hostnamePc = looca.getRede().getParametros().getHostName();
+
+        String caminhoArquivo = "C:\\Log\\logs.txt";
+
+        String date = "";
+        String logLevel = "";
+        Integer statusCode = 0;
+        String detail = "";
+        String stackTrace = "";
 
 //        verifica usuario
         System.out.println("Digite seu login");
@@ -42,8 +51,13 @@ public class Main {
 
         switch (usuarioBanco.size()) {
             case 0:
-//                usuario nao encontrado
-                System.out.println("Login ou senha incorretos ou inexistentes");
+                date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+                logLevel = "WARN";
+                statusCode = 403;
+                detail = "'message': '%s', 'email': '%s', 'senha': '%s'".formatted("E-mail ou senha incorreto(s).", login_digitado, senha_digitada.replaceAll(".", "*"));
+
+                Log warnLogUsuario = new Log(date, logLevel, statusCode, detail, stackTrace);
+                Log.gerarLog(caminhoArquivo, warnLogUsuario.toString());
                 break;
 
             default:
