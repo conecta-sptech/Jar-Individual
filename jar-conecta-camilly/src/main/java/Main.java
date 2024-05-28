@@ -389,7 +389,7 @@ public class Main {
                         (leitura.formatString(discoAtual.discoDisponivel), taxa_leitura_disco, taxa_escrita_disco, fk_empresa));
 
         do {
-            System.out.println("Dados que serão capturados da Memória:");
+            System.out.println("Dados que serão capturados do Disco:");
             System.out.println("1. Disco Disponível (%)");
             System.out.println("2. Taxa de Escrita (Kb/s)");
             System.out.println("3. Taxa de Leitura (Kb/s)");
@@ -397,7 +397,7 @@ public class Main {
 
             opcaoDisco = leitor.nextInt();
 
-            System.out.println("Memoria");
+            System.out.println("Disco");
             switch (opcaoDisco) {
                 case 1:
                     dadosSelecionados.add("""
@@ -444,14 +444,14 @@ public class Main {
                         (taxa_dowload_rede, taxa_upload_rede, fk_empresa));
 
         do {
-            System.out.println("Dados que serão capturados da Memória:");
+            System.out.println("Dados que serão capturados de Redes:");
             System.out.println("1. Taxa Dowload (Mb/s)");
             System.out.println("2. Taxa Upload (Mb/s)");
             System.out.println("0. Concluir seleção");
 
             opcaoDisco = leitor.nextInt();
 
-            System.out.println("Memoria");
+            System.out.println("Rede");
             switch (opcaoDisco) {
                 case 1:
                     dadosSelecionados.add("""
